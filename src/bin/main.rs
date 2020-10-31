@@ -31,10 +31,10 @@ fn test_this_sort(algo: fn(&mut Vec<u16>, usize, usize)) {
     }
 }
 
-fn test_heap_sort() {
-    test_this_sort(heap_sort);
+fn test_quick_sort() {
+    test_this_sort(quick_sort);
 }
 
 fn main() {
-    test_heap_sort();
+    test_quick_sort();
 }

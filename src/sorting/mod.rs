@@ -151,6 +151,57 @@ where
     }
 }
 
+pub fn partition<T>(arr: &mut Vec<T>, start: usize, end: usize) -> usize
+where
+    T: PartialOrd + Copy + std::fmt::Debug,
+{
+    let mut idx = start;
+
+    if arr[start] < arr[end] {
+        idx += 1;
+    }
+
+    println!("{:?}", arr);
+
+    for i in start + 1..end {
+        if arr[i] < arr[end] {
+            // swapping arr[i] & arr[idx]
+            let temp = arr[i];
+            arr[i] = arr[idx];
+            arr[idx] = temp;
+
+            println!("{:?}", arr);
+            idx += 1;
+        }
+    }
+
+    // swapping arr[idx] with arr[end]
+    let temp = arr[idx];
+    arr[idx] = arr[end];
+    arr[end] = temp;
+
+    idx
+}
+
+pub fn quick_sort<T>(arr: &mut Vec<T>, start: usize, end: usize)
+where
+    T: PartialOrd + Copy + std::fmt::Debug,
+{
+    if start == end {
+        return;
+    }
+
+    let mid = partition(arr, start, end);
+
+    if mid > start {
+        quick_sort(arr, start, mid - 1);
+    }
+
+    if mid < end {
+        quick_sort(arr, mid + 1, end);
+    }
+}
+
 #[cfg(test)]
 mod tests {
     use super::*;
@@ -208,5 +259,10 @@ mod tests {
     #[test]
     fn test_heap_sort() {
         test_this_sort(heap_sort);
+    }
+
+    #[test]
+    fn test_quick_sort() {
+        test_this_sort(quick_sort);
     }
 }

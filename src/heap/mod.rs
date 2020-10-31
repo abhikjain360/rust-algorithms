@@ -173,57 +173,55 @@ where
     /// deletes the node at ith position
     pub fn delete(&mut self, idx: usize) -> T {
         assert!(self.heap_size > 0);
+        self.exchange(idx, self.heap_size - 1);
 
-        self.exchange(idx, self.heap_size);
-        self.heap_size -= 1;
-        self.min_heapify(idx);
+        if self[idx] < self[self.heap_size - 1] {
+            self.heap_size -= 1;
+            self.max_heapify(idx);
+        } else {
+            self.reevaluate(idx);
+        }
+
         self.arr.pop().unwrap()
-    }
-}
-
-pub struct PriorityQueue<'a, T>(Heap<'a, T>);
-
-impl<'a, T> PriorityQueue<'a, T>
-where
-    T: Copy + PartialOrd,
-{
-    /// PriorityQueue from a heap
-    pub fn new(heap: Heap<'a, T>) -> Self {
-        PriorityQueue(heap)
     }
 
     /// use is increasing a node's priority
     pub fn reevaluate(&mut self, idx: usize) {
-        assert!(self.0[idx] < self.0[self.0.right(idx)] && self.0[idx] < self.0[self.0.left(idx)]);
+        assert!(self[idx] < self[self.right(idx)] && self[idx] < self[self.left(idx)]);
 
-        let mut i = self.0.parent(idx);
-        let mut parent = self.0.parent(i);
+        let mut i = self.parent(idx);
+        let mut parent = self.parent(i);
 
-        while i > 0 && self.0[parent] < self.0[i] {
-            self.0.exchange(i, parent);
+        let key = self[i];
+
+        while i > 0 && self[parent] < self[i] {
+            self[i] = self[parent];
             i = parent;
-            parent = self.0.parent(i);
+            parent = self.parent(i);
         }
+        self[i] = key;
     }
 
     /// insert elements into queue
     /// assumes length == heap size
     pub fn push(&mut self, elem: T) {
-        self.0.arr.push(elem);
-        self.0.heap_size += 1;
-        self.reevaluate(self.0.heap_size - 1);
+        self.arr.push(elem);
+        self.heap_size += 1;
+        self.reevaluate(self.heap_size - 1);
     }
 
     /// immutable reference to top element
     pub fn peek(&self) -> &T {
-        &self.0.arr[0]
+        &self.arr[0]
     }
 
     /// remove the top element
     pub fn pop(&mut self) -> T {
-        self.0.delete(0)
+        self.delete(0)
     }
 }
+
+type PriorityQueue<'a, T> = Heap<'a, T>;
 
 #[cfg(test)]
 mod test {
