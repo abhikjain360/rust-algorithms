@@ -169,6 +169,16 @@ where
             self.min_heapify(i);
         }
     }
+
+    /// deletes the node at ith position
+    pub fn delete(&mut self, idx: usize) -> T {
+        assert!(self.heap_size > 0);
+
+        self.exchange(idx, self.heap_size);
+        self.heap_size -= 1;
+        self.min_heapify(idx);
+        self.arr.pop().unwrap()
+    }
 }
 
 pub struct PriorityQueue<'a, T>(Heap<'a, T>);
@@ -177,10 +187,12 @@ impl<'a, T> PriorityQueue<'a, T>
 where
     T: Copy + PartialOrd,
 {
+    /// PriorityQueue from a heap
     pub fn new(heap: Heap<'a, T>) -> Self {
         PriorityQueue(heap)
     }
 
+    /// use is increasing a node's priority
     pub fn reevaluate(&mut self, idx: usize) {
         assert!(self.0[idx] < self.0[self.0.right(idx)] && self.0[idx] < self.0[self.0.left(idx)]);
 
@@ -199,21 +211,17 @@ where
     pub fn push(&mut self, elem: T) {
         self.0.arr.push(elem);
         self.0.heap_size += 1;
-        self.reevaluate(self.0.heap_size);
+        self.reevaluate(self.0.heap_size - 1);
     }
 
+    /// immutable reference to top element
     pub fn peek(&self) -> &T {
         &self.0.arr[0]
     }
 
+    /// remove the top element
     pub fn pop(&mut self) -> T {
-        let max = self.0.arr[0];
-
-        self.0.arr[0] = self.0.arr[self.0.heap_size];
-        self.0.heap_size -= 1;
-        self.0.max_heapify(0);
-
-        max
+        self.0.delete(0)
     }
 }
 
